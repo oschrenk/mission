@@ -11,7 +11,7 @@ Track your mission
 
 You need to configure the path containing your journal entries
 
-````
+```
 [journal]
 path = "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/personal/10 Journals/Personal"
 extension = "md"
