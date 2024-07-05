@@ -8,13 +8,13 @@ import (
 )
 
 type Sketchybar struct {
-	Path  string `default:"sketchybar"`
-	Event string `default:"mission_watch"`
+	Path  string
+	Event string
 }
 
 type Settings struct {
 	CalendarDataPath string
-	Extension        string `default:"md"`
+	Extension        string
 	Sketchybar       Sketchybar
 }
 
