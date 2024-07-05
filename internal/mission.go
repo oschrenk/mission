@@ -2,9 +2,13 @@ package internal
 
 import (
 	"fmt"
+	"log"
+	"os/exec"
 	"time"
 
 	model "github.com/oschrenk/mission/model"
+
+	"github.com/fsnotify/fsnotify"
 )
 
 type Mission struct {
@@ -18,6 +22,54 @@ func DefaultInstance() Mission {
 
 func NewInstance(settings Settings) Mission {
 	return Mission{settings: settings}
+}
+
+func (mission *Mission) Watch() {
+	fmt.Println("Watching", mission.settings.CalendarDataPath)
+
+	sketchybar := mission.settings.Sketchybar.Path
+	args := []string{"--trigger", mission.settings.Sketchybar.Event}
+	fmt.Printf("Using `%s %s %s`", sketchybar, args[0], args[1])
+
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+
+	// listen for events
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if event.Has(fsnotify.Write) {
+					log.Println("modified file:", event.Name)
+					cmd := exec.Command(sketchybar, args...)
+					_, err := cmd.Output()
+					if err != nil {
+						fmt.Printf("Failed with: %q\n", err)
+					}
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Println("error:", err)
+			}
+		}
+	}()
+
+	// Add a path.
+	err = watcher.Add(mission.settings.CalendarDataPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Block main goroutine forever.
+	<-make(chan struct{})
 }
 
 func (mission *Mission) GetTasks(dateTime time.Time, tp TimePrecision) ([]model.Task, error) {

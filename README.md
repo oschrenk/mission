@@ -17,6 +17,13 @@ path = "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/personal/10 
 extension = "md"
 ```
 
+You can configure sketchybar (defaults below)
+
+```
+[sketchybar]
+path = "sketchybar"
+event = "mission_watch"
+```
 ## Usage
 
 ### `mission tasks`
