@@ -26,9 +26,9 @@ func NewInstance(settings Settings) Mission {
 }
 
 func (mission *Mission) Watch() {
-
-	settings := mission.settings
-	sketchybar := settings.Sketchybar.Path
+	journal := mission.settings.Journals["default"]
+	sketchybar := mission.settings.Sketchybar
+	focus := mission.settings.Focus
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -50,11 +50,11 @@ func (mission *Mission) Watch() {
 					log.Println("Modified file:", event.Name)
 
 					today := time.Now().Local().Format("2006-01-02")
-					todayName := fmt.Sprintf("%s.%s", today, settings.Journal.Extension)
+					todayName := fmt.Sprintf("%s.%s", today, journal.Extension)
 
 					if fileName == todayName {
-						log.Println("Found change in todays file:", event.Name)
-						args := [3]string{sketchybar, "--trigger", settings.Sketchybar.TaskEvent}
+						log.Println("Found change in today's file:", event.Name)
+						args := [3]string{sketchybar.Path, "--trigger", sketchybar.TaskEvent}
 
 						log.Println("Firing:", args)
 						cmd := exec.Command(args[0], args[1], args[2])
@@ -72,7 +72,7 @@ func (mission *Mission) Watch() {
 					// basic test
 					if fileName == "Assertions.json" {
 						log.Println("Found change in focus file:", event.Name)
-						args := [3]string{sketchybar, "--trigger", settings.Sketchybar.FocusEvent}
+						args := [3]string{sketchybar.Path, "--trigger", sketchybar.FocusEvent}
 						log.Println("Firing:", args)
 						cmd := exec.Command(args[0], args[1], args[2])
 						_, err := cmd.Output()
@@ -92,18 +92,18 @@ func (mission *Mission) Watch() {
 	}()
 
 	// Add journal path
-	err = watcher.Add(settings.Journal.Path)
+	err = watcher.Add(journal.Path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Watching", settings.Journal.Path)
+	fmt.Println("Watching", journal.Path)
 
 	// Add do not disturb path
-	err = watcher.Add(settings.Focus.Path)
+	err = watcher.Add(focus.Path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Watching", settings.Focus.Path)
+	fmt.Println("Watching", focus.Path)
 
 	// Block main goroutine forever.
 	<-make(chan struct{})
@@ -113,14 +113,14 @@ func (mission *Mission) GetTasks(dateTime time.Time, tp TimePrecision) ([]model.
 	entry := ""
 	switch tp {
 	case Day:
-		entry = fmt.Sprint(dateTime.Format("2006-01-02"), ".", mission.settings.Journal.Extension)
+		entry = fmt.Sprint(dateTime.Format("2006-01-02"), ".", mission.settings.Journals["default"].Extension)
 	case Week:
 		year, week := dateTime.ISOWeek()
-		entry = fmt.Sprint(year, "-W", fmt.Sprintf("%02d", week), ".", mission.settings.Journal.Extension)
+		entry = fmt.Sprint(year, "-W", fmt.Sprintf("%02d", week), ".", mission.settings.Journals["default"].Extension)
 	default:
 		return nil, fmt.Errorf("unsupported precision %s", tp)
 	}
-	path := mission.settings.Journal.Path + "/" + entry
+	path := mission.settings.Journals["default"].Path + "/" + entry
 	data, doc, err := parseFile(path)
 	if err != nil {
 		return nil, err

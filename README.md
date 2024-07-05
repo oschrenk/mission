@@ -16,8 +16,12 @@ Track your mission [sketchybar](https://github.com/FelixKratz/SketchyBar)
 You need to configure the path containing your journal entries
 
 ```
-[journal]
-path = "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/personal/10 Journals/Personal"
+[[journals.default]]
+path = "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/personal"
+extension = "md"
+
+[[journals.work]]
+path = "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/work/"
 extension = "md"
 ```
 
@@ -26,8 +30,8 @@ You can configure sketchybar (defaults below)
 ```
 [sketchybar]
 path = "/opt/homebrew/bin/sketchybar"
-event.task = "mission_task"
-event.focus = "mission_focus"
+event_task = "mission_task"
+event_focus = "mission_focus"
 ```
 ## Usage
 
