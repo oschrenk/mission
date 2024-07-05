@@ -1,6 +1,10 @@
 # README
 
-Track your mission
+Track your mission [sketchybar](https://github.com/FelixKratz/SketchyBar)
+
+- Displays and counts today's tasks
+- Emits sketchybar event  if today's journal entry changes
+- Emits sketchybar event if macOS focus changes
 
 ## Configuration
 
@@ -22,7 +26,8 @@ You can configure sketchybar (defaults below)
 ```
 [sketchybar]
 path = "/opt/homebrew/bin/sketchybar"
-event = "mission_watch"
+event.task = "mission_task"
+event.focus = "mission_focus"
 ```
 ## Usage
 

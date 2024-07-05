@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	model "github.com/oschrenk/mission/model"
@@ -25,11 +26,9 @@ func NewInstance(settings Settings) Mission {
 }
 
 func (mission *Mission) Watch() {
-	fmt.Println("Watching", mission.settings.CalendarDataPath)
 
-	sketchybar := mission.settings.Sketchybar.Path
-	args := []string{"--trigger", mission.settings.Sketchybar.Event}
-	fmt.Printf("Using `%s %s %s`", sketchybar, args[0], args[1])
+	settings := mission.settings
+	sketchybar := settings.Sketchybar.Path
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -45,14 +44,44 @@ func (mission *Mission) Watch() {
 				if !ok {
 					return
 				}
+				fileName := filepath.Base(event.Name)
+
 				if event.Has(fsnotify.Write) {
-					log.Println("modified file:", event.Name)
-					cmd := exec.Command(sketchybar, args...)
-					_, err := cmd.Output()
-					if err != nil {
-						fmt.Printf("Failed with: %q\n", err)
+					log.Println("Modified file:", event.Name)
+
+					today := time.Now().Local().Format("2006-01-02")
+					todayName := fmt.Sprintf("%s.%s", today, settings.Journal.Extension)
+
+					if fileName == todayName {
+						log.Println("Found change in todays file:", event.Name)
+						args := [3]string{sketchybar, "--trigger", settings.Sketchybar.TaskEvent}
+
+						log.Println("Firing:", args)
+						cmd := exec.Command(args[0], args[1], args[2])
+						_, err := cmd.Output()
+						if err != nil {
+							fmt.Printf("Failed with: %q\n", err)
+						}
 					}
 				}
+
+				// DoNotDisturb changes remove, and re-create the
+				//    ~/Library/DoNotDisturb/DB/Assertions.json
+				// file
+				if event.Has(fsnotify.Create) {
+					// basic test
+					if fileName == "Assertions.json" {
+						log.Println("Found change in focus file:", event.Name)
+						args := [3]string{sketchybar, "--trigger", settings.Sketchybar.FocusEvent}
+						log.Println("Firing:", args)
+						cmd := exec.Command(args[0], args[1], args[2])
+						_, err := cmd.Output()
+						if err != nil {
+							fmt.Printf("Failed with: %q\n", err)
+						}
+					}
+				}
+
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					return
@@ -62,11 +91,19 @@ func (mission *Mission) Watch() {
 		}
 	}()
 
-	// Add a path.
-	err = watcher.Add(mission.settings.CalendarDataPath)
+	// Add journal path
+	err = watcher.Add(settings.Journal.Path)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Watching", settings.Journal.Path)
+
+	// Add do not disturb path
+	err = watcher.Add(settings.Focus.Path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Watching", settings.Focus.Path)
 
 	// Block main goroutine forever.
 	<-make(chan struct{})
@@ -76,14 +113,14 @@ func (mission *Mission) GetTasks(dateTime time.Time, tp TimePrecision) ([]model.
 	entry := ""
 	switch tp {
 	case Day:
-		entry = fmt.Sprint(dateTime.Format("2006-01-02"), ".", mission.settings.Extension)
+		entry = fmt.Sprint(dateTime.Format("2006-01-02"), ".", mission.settings.Journal.Extension)
 	case Week:
 		year, week := dateTime.ISOWeek()
-		entry = fmt.Sprint(year, "-W", fmt.Sprintf("%02d", week), ".", mission.settings.Extension)
+		entry = fmt.Sprint(year, "-W", fmt.Sprintf("%02d", week), ".", mission.settings.Journal.Extension)
 	default:
 		return nil, fmt.Errorf("unsupported precision %s", tp)
 	}
-	path := mission.settings.CalendarDataPath + "/" + entry
+	path := mission.settings.Journal.Path + "/" + entry
 	data, doc, err := parseFile(path)
 	if err != nil {
 		return nil, err
