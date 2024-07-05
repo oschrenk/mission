@@ -22,7 +22,7 @@ func LoadSettings() Settings {
 
 	// set defaults
 	viper.SetDefault("journal.extension", "md")
-	viper.SetDefault("sketchybar.path", "sketchybar")
+	viper.SetDefault("sketchybar.path", "/opt/homebrew/bin/sketchybar")
 	viper.SetDefault("sketchybar.event", "mission_watch")
 
 	// set config type

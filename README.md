@@ -21,7 +21,7 @@ You can configure sketchybar (defaults below)
 
 ```
 [sketchybar]
-path = "sketchybar"
+path = "/opt/homebrew/bin/sketchybar"
 event = "mission_watch"
 ```
 ## Usage
