@@ -24,4 +24,6 @@ air -c ./.air.toml --build.bin "./tmp/main todo"
 ## Release
 
 1. Increase version number in `VERSION`
-2. `task release`
+2. `task release` to tag and push
+3. `task sha` to print shas to stdout
+4. Make changes in [homebrew-made](https://github.com/oschrenk/homebrew-made)
