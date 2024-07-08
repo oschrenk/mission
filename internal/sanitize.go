@@ -11,8 +11,12 @@ func Sanitize(text string) string {
 	// remove wikilinks: [[text]] => text
 	wikilinkReg := regexp.MustCompile(`\[\[(.*?)\]\]`)
 
+	// remove tags: "#foo" => ""
+	tagReg := regexp.MustCompile(`\s#.*`)
+
 	text = hrefReg.ReplaceAllString(text, "$1")
 	text = wikilinkReg.ReplaceAllString(text, "$1")
+	text = tagReg.ReplaceAllString(text, "")
 
 	return text
 }

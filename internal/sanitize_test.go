@@ -23,3 +23,13 @@ func TestSanitizeWikiLink(t *testing.T) {
 		t.Fatalf(`%s should equal %s`, sanitized, wants)
 	}
 }
+
+func TestSanitizeHashTags(t *testing.T) {
+	raw := "Do something #woot"
+	sanitized := Sanitize(raw)
+	wants := "Do something"
+
+	if sanitized != wants {
+		t.Fatalf(`%s should equal %s`, sanitized, wants)
+	}
+}
