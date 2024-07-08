@@ -1,10 +1,10 @@
-# README
+- [ ] # README
 
-Track your mission [sketchybar](https://github.com/FelixKratz/SketchyBar)
+Track your mission (with [sketchybar](https://github.com/FelixKratz/SketchyBar))
 
 - Displays and counts today's tasks
 * Displays macOS focus
-- Emits sketchybar event  if today's journal entry changes
+- Emits sketchybar event if today's journal entry changes
 - Emits sketchybar event if macOS focus changes
 
 ## Configuration
@@ -59,9 +59,15 @@ com.apple.focus.work
 Possible return values (for built in focus)
 
 - `com.apple.donotdisturb.mode.default`
-- `kcom.apple.focus.personal-time`
+- `com.apple.focus.personal-time`
 - `com.apple.focus.work`
 - `com.apple.sleep.sleep-mode`
+
+### `mission watch`
+
+Watches the default journal for changes in today's notes and for changes in macOS' builtin focus mode
+
+`mission watch` will log file changes to `stdout` and emit sketchybar events
 
 ## Installation
 
