@@ -1,10 +1,8 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -12,7 +10,6 @@ import (
 	model "github.com/oschrenk/mission/model"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/itchyny/gojq"
 )
 
 type Mission struct {
@@ -28,36 +25,8 @@ func NewInstance(settings Settings) Mission {
 	return Mission{settings: settings}
 }
 
-func parseFocusFile(path string) string {
-	query, err := gojq.Parse("try .data[].storeAssertionRecords[].assertionDetails.assertionDetailsModeIdentifier")
-	if err != nil {
-		log.Println(err)
-	}
-	bytes, err := os.ReadFile(path) // just pass the file name
-	if err != nil {
-		log.Println(err)
-	}
-	dynamic := make(map[string]interface{})
-	err = json.Unmarshal(bytes, &dynamic)
-	if err != nil {
-		log.Println(err)
-	}
-	iter := query.Run(dynamic) // or query.RunWithContext
-	var value string
-	for {
-		v, ok := iter.Next()
-		if !ok {
-			break
-		}
-		if err, ok := v.(error); ok {
-			if err, ok := err.(*gojq.HaltError); ok && err.Value() == nil {
-				break
-			}
-			log.Println(err)
-		}
-		value = fmt.Sprintf("%s", v)
-	}
-	return value
+func (mission *Mission) Focus() string {
+	return GetFocus(mission.settings.Focus.Path)
 }
 
 func (mission *Mission) Watch() {
@@ -107,7 +76,7 @@ func (mission *Mission) Watch() {
 					// basic test
 					if fileName == "Assertions.json" {
 						log.Println("Found change in focus file:", event.Name)
-						focus := parseFocusFile(event.Name)
+						focus := GetFocus(event.Name)
 
 						args := [4]string{sketchybar.Path, "--trigger", sketchybar.FocusEvent, fmt.Sprintf("FOCUS_MODE=%s", focus)}
 						log.Println("Firing:", args)

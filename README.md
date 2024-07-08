@@ -3,6 +3,7 @@
 Track your mission [sketchybar](https://github.com/FelixKratz/SketchyBar)
 
 - Displays and counts today's tasks
+* Displays macOS focus
 - Emits sketchybar event  if today's journal entry changes
 - Emits sketchybar event if macOS focus changes
 
@@ -46,6 +47,21 @@ mission tasks
   󰝦 Cheese
 2 open tasks
 ```
+
+### `mission fcous`
+
+Return current macOS focus
+
+```
+mission focus
+com.apple.focus.work
+```
+Possible return values (for built in focus)
+
+- `com.apple.donotdisturb.mode.default`
+- `kcom.apple.focus.personal-time`
+- `com.apple.focus.work`
+- `com.apple.sleep.sleep-mode`
 
 ## Installation
 
