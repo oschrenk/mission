@@ -21,15 +21,6 @@ func (mission *Mission) parseTask(task string, depth int) optional.Option[model.
 	return mission.parseTaskState(text, depth)
 }
 
-func stripText(text string) string {
-	text = strings.TrimSpace(text[3:])
-	// remove links
-	var linksReg = regexp.MustCompile(`\[(.*?)\][\[\(].*?[\]\)]`)
-	text = linksReg.ReplaceAllString(text, "$1")
-
-	return text
-}
-
 func (mission *Mission) parseTaskState(text string, depth int) optional.Option[model.Task] {
 	var state model.TaskState
 
@@ -40,7 +31,7 @@ func (mission *Mission) parseTaskState(text string, depth int) optional.Option[m
 	// if any state trigger is found we assume it's a Todo
 	if len(matches) == 2 {
 		stateChar := matches[1]
-		text = stripText(text)
+		text = Sanitize(strings.TrimSpace(text[3:]))
 		switch {
 		case stateChar == model.Open.Trigger():
 			state = model.Open
