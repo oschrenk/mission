@@ -115,18 +115,22 @@ func (mission *Mission) Watch() {
 	<-make(chan struct{})
 }
 
-func (mission *Mission) GetTasks(dateTime time.Time, tp TimePrecision) ([]model.Task, error) {
+func (mission *Mission) GetTasks(journalName string, dateTime time.Time, tp TimePrecision) ([]model.Task, error) {
+
 	entry := ""
+	journal := mission.settings.Journals[journalName]
+
 	switch tp {
 	case Day:
-		entry = fmt.Sprint(dateTime.Format("2006-01-02"), ".", mission.settings.Journals["default"].Extension)
+		entry = fmt.Sprint(dateTime.Format("2006-01-02"), ".", journal.Extension)
 	case Week:
 		year, week := dateTime.ISOWeek()
-		entry = fmt.Sprint(year, "-W", fmt.Sprintf("%02d", week), ".", mission.settings.Journals["default"].Extension)
+		entry = fmt.Sprint(year, "-W", fmt.Sprintf("%02d", week), ".", journal.Extension)
 	default:
 		return nil, fmt.Errorf("unsupported precision %s", tp)
 	}
-	path := mission.settings.Journals["default"].Path + "/" + entry
+
+	path := journal.Path + "/" + entry
 	data, doc, err := parseFile(path)
 	if err != nil {
 		return nil, err

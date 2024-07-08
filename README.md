@@ -25,6 +25,8 @@ If you do use the app with SketchyBar, SketchyBar would need "Full Disk Access" 
 
 You need to configure the path containing your journal entries
 
+One journal MUST be named `default`
+
 ```
 [[journals.default]]
 path = "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/personal"
@@ -54,7 +56,16 @@ mission tasks
 󰄴 Unpack luggage
 󰝦 Grocery shopping
   󰝦 Cheese
-2 open tasks
+1/2 tasks
+```
+
+Print today's tasks from "work" journal
+
+```
+mission tasks --journal=work
+󰄴 Finish ticket 123
+󰝦 Do ticket 456
+1/2 tasks
 ```
 
 ### `mission fcous`

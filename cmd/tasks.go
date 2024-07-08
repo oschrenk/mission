@@ -25,6 +25,7 @@ var tasksCmd = &cobra.Command{
 		WithSummary, _ := cmd.Flags().GetBool("summary")
 		ShowCancelled, _ := cmd.Flags().GetBool("show-cancelled")
 		ShowDone, _ := cmd.Flags().GetBool("show-done")
+		targetJournal, _ := cmd.Flags().GetString("journal")
 
 		now := time.Now()
 		dateTime := now
@@ -44,7 +45,7 @@ var tasksCmd = &cobra.Command{
 		}
 
 		mission := m.DefaultInstance()
-		tasks, err := mission.GetTasks(dateTime, precision)
+		tasks, err := mission.GetTasks(targetJournal, dateTime, precision)
 		open := 0
 		cancelled := 0
 		done := 0
@@ -88,4 +89,5 @@ func init() {
 	tasksCmd.Flags().BoolP("summary", "s", true, "Print summary")
 	tasksCmd.Flags().BoolP("show-cancelled", "c", true, "Show Cancelled")
 	tasksCmd.Flags().BoolP("show-done", "d", true, "Show Done")
+	tasksCmd.Flags().StringP("journal", "j", "default", "Select Journal with id")
 }
