@@ -24,6 +24,16 @@ func TestSanitizeWikiLink(t *testing.T) {
 	}
 }
 
+func TestRelabelWikilink(t *testing.T) {
+	raw := "Link to [[Wikilink|Something]]"
+	sanitized := Sanitize(raw)
+	wants := "Link to Something"
+
+	if sanitized != wants {
+		t.Fatalf(`%s should equal %s`, sanitized, wants)
+	}
+}
+
 func TestSanitizeHashTags(t *testing.T) {
 	raw := "Do something #woot"
 	sanitized := Sanitize(raw)
