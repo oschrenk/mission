@@ -19,6 +19,7 @@ type Focus struct {
 }
 
 type Journal struct {
+	Id        string
 	Path      string `mapstructure:"path"`
 	Extension string `mapstructure:"extension"`
 }
@@ -38,10 +39,11 @@ type Settings struct {
 
 func fromParsed(parsed parsed) Settings {
 	var journals = make(map[string]Journal)
-	for k, v := range parsed.Journals {
-		j := v[0]
+	for id, journal := range parsed.Journals {
+		j := journal[0]
 		j.Path = os.ExpandEnv(j.Path)
-		journals[k] = j
+		j.Id = id
+		journals[id] = j
 	}
 
 	sketchybar := parsed.Sketchybar

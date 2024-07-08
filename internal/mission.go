@@ -9,6 +9,7 @@ import (
 
 	model "github.com/oschrenk/mission/model"
 
+	"github.com/LNMMusic/optional"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -29,8 +30,47 @@ func (mission *Mission) Focus() string {
 	return GetFocus(mission.settings.Focus.Path)
 }
 
+func getJournalFromPath(targetPath string, journals map[string]Journal) optional.Option[Journal] {
+	for _, journal := range journals {
+		journalDir := filepath.Clean(journal.Path)
+		fileDir := filepath.Dir(targetPath)
+		if journalDir == fileDir {
+			return optional.Some[Journal](journal)
+		}
+	}
+	return optional.None[Journal]()
+}
+
+func testAndFireTask(path string, journals map[string]Journal, sketchybar Sketchybar) {
+
+	maybeJournal := getJournalFromPath(path, journals)
+	if maybeJournal.IsSome() {
+		journal := maybeJournal.Unwrap()
+		fileName := filepath.Base(path)
+		today := time.Now().Local().Format("2006-01-02")
+		todayName := fmt.Sprintf("%s.%s", today, journal.Extension)
+
+		if fileName == todayName {
+
+			fmt.Printf("Found change in \"%s\" journal for today: \"%s\"\n", journal.Id, path)
+
+			binary := sketchybar.Path
+			eventName := sketchybar.TaskEvent
+			journalEnv := fmt.Sprintf("JOURNAL_ID=%s", journal.Id)
+			args := [4]string{binary, "--trigger", eventName, journalEnv}
+
+			fmt.Printf("Firing: %s\n", args)
+			cmd := exec.Command(binary, args[1:]...)
+			_, err := cmd.Output()
+			if err != nil {
+				fmt.Printf("Failed with: %q\n", err)
+			}
+		}
+	}
+}
+
 func (mission *Mission) Watch() {
-	journal := mission.settings.Journals["default"]
+	journals := mission.settings.Journals
 	sketchybar := mission.settings.Sketchybar
 	focus := mission.settings.Focus
 
@@ -50,36 +90,22 @@ func (mission *Mission) Watch() {
 				}
 				fileName := filepath.Base(event.Name)
 
+				// Obsidian just writes to the target file
 				if event.Has(fsnotify.Write) {
-					log.Println("Modified file:", event.Name)
+					fmt.Printf("Modified file: %s \n", event.Name)
 
-					today := time.Now().Local().Format("2006-01-02")
-					todayName := fmt.Sprintf("%s.%s", today, journal.Extension)
+					testAndFireTask(event.Name, journals, sketchybar)
 
-					if fileName == todayName {
-						log.Println("Found change in today's file:", event.Name)
-						args := [3]string{sketchybar.Path, "--trigger", sketchybar.TaskEvent}
-
-						log.Println("Firing:", args)
-						cmd := exec.Command(args[0], args[1], args[2])
-						_, err := cmd.Output()
-						if err != nil {
-							fmt.Printf("Failed with: %q\n", err)
-						}
-					}
-				}
-
-				// DoNotDisturb changes remove, and re-create the
-				//    ~/Library/DoNotDisturb/DB/Assertions.json
-				// file
-				if event.Has(fsnotify.Create) {
+					// DoNotDisturb changes removes, and re-creates the
+					//    ~/Library/DoNotDisturb/DB/Assertions.json
+				} else if event.Has(fsnotify.Create) {
 					// basic test
 					if fileName == "Assertions.json" {
-						log.Println("Found change in focus file:", event.Name)
-						focus := GetFocus(event.Name)
+						fmt.Printf("Found change in focus file: %s\n", event.Name)
+						newFocus := GetFocus(event.Name)
 
-						args := [4]string{sketchybar.Path, "--trigger", sketchybar.FocusEvent, fmt.Sprintf("FOCUS_MODE=%s", focus)}
-						log.Println("Firing:", args)
+						args := [4]string{sketchybar.Path, "--trigger", sketchybar.FocusEvent, fmt.Sprintf("FOCUS_MODE=%s", newFocus)}
+						fmt.Printf("Firing: %s\n", args)
 						cmd := exec.Command(args[0], args[1], args[2], args[3])
 						_, err := cmd.Output()
 						if err != nil {
@@ -97,19 +123,21 @@ func (mission *Mission) Watch() {
 		}
 	}()
 
-	// Add journal path
-	err = watcher.Add(journal.Path)
-	if err != nil {
-		log.Fatal(err)
+	// Add journal paths
+	for name, journal := range journals {
+		err = watcher.Add(journal.Path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Watching \"%s\" journal at \"%s\"\n", name, journal.Path)
 	}
-	fmt.Println("Watching", journal.Path)
 
 	// Add do not disturb path
 	err = watcher.Add(focus.Path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Watching", focus.Path)
+	fmt.Printf("Watching macOS Focus settings at \"%s\"\n", focus.Path)
 
 	// Block main goroutine forever.
 	<-make(chan struct{})

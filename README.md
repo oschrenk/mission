@@ -5,6 +5,7 @@ Track your mission (with [sketchybar](https://github.com/FelixKratz/SketchyBar))
 - Displays and counts today's tasks
 * Displays macOS focus
 - Emits sketchybar event if today's journal entry changes
+  - also emits `JOURNAL_ID` as ENV variable, see also [Triggering Custom Events](https://felixkratz.github.io/SketchyBar/config/events#triggering-custom-events) for more details
 - Emits sketchybar event if macOS focus changes
 
 ## Configuration
