@@ -30,5 +30,9 @@ func Sanitize(text string) string {
 		}
 	}
 
+	// **foo** => foo
+	boldReg := regexp.MustCompile(`\*\*(.*?)\*\*`)
+	text = boldReg.ReplaceAllString(text, "$1")
+
 	return text
 }

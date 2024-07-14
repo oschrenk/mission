@@ -43,3 +43,13 @@ func TestSanitizeHashTags(t *testing.T) {
 		t.Fatalf(`%s should equal %s`, sanitized, wants)
 	}
 }
+
+func TestSanitizeBold(t *testing.T) {
+	raw := "Do **something**"
+	sanitized := Sanitize(raw)
+	wants := "Do something"
+
+	if sanitized != wants {
+		t.Fatalf(`%s should equal %s`, sanitized, wants)
+	}
+}
