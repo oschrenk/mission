@@ -1,4 +1,4 @@
-- [ ] # README
+# README
 
 Track your mission (with [sketchybar](https://github.com/FelixKratz/SketchyBar))
 
