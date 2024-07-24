@@ -94,11 +94,10 @@ Watches the default journal for changes in today's notes and for changes in macO
 
 **Via Github**
 
+- installs to `$GOBIN/mission`
+
 ```
 git clone git@github.com:oschrenk/mission.git
 cd mission
-
-# installs to $GOBIN/mission
 task install
 ```
-````
