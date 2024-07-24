@@ -101,3 +101,11 @@ git clone git@github.com:oschrenk/mission.git
 cd mission
 task install
 ```
+
+**Via homebrew**
+
+```
+brew tap oschrenk/made git@github.com:oschrenk/homebrew-made
+brew install oschrenk/made/mission
+```
+
