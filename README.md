@@ -91,7 +91,6 @@ mission tasks --journal=work --json
   }
 }
 ```
-```
 
 ### `mission fcous`
 
