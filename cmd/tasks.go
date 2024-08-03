@@ -87,7 +87,7 @@ var tasksCmd = &cobra.Command{
 			json, _ := json.MarshalIndent(wrapper, "", "  ")
 			fmt.Println(string(json))
 		} else {
-			for _, task := range tasks {
+			for _, task := range filteredTasks {
 				fmt.Println(task)
 			}
 
