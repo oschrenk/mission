@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -15,6 +16,11 @@ func init() {
 	rootCmd.AddCommand(tasksCmd)
 }
 
+type TasksWrapper struct {
+	Tasks   []model.Task  `json:"tasks"`
+	Summary model.Summary `json:"summary"`
+}
+
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
 	Short: "Show tasks",
@@ -24,6 +30,7 @@ var tasksCmd = &cobra.Command{
 		m.Logger.Enabled = verbose
 		WithSummary, _ := cmd.Flags().GetBool("summary")
 		ShowCancelled, _ := cmd.Flags().GetBool("show-cancelled")
+		AsJson, _ := cmd.Flags().GetBool("json")
 		ShowDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
 
@@ -49,44 +56,54 @@ var tasksCmd = &cobra.Command{
 		open := 0
 		cancelled := 0
 		done := 0
+		filteredTasks := []model.Task{}
 		if err == nil {
 			for _, task := range tasks {
 				switch task.State {
 				case model.Cancelled:
 					cancelled = cancelled + 1
 					if ShowCancelled {
-						fmt.Println(task.String())
+						filteredTasks = append(filteredTasks, task)
 					}
 				case model.Done:
 					done = done + 1
 					if ShowDone {
-						fmt.Println(task.String())
+						filteredTasks = append(filteredTasks, task)
 					}
 				case model.Open:
 					open = open + 1
-					fmt.Println(task.String())
+					filteredTasks = append(filteredTasks, task)
 				}
 			}
-		}
 
-		if !ShowCancelled {
-			cancelled = 0
+			if !ShowCancelled {
+				cancelled = 0
+			}
 		}
+		summary := model.Summary{Done: done, Total: open + done + cancelled}
+		wrapper := TasksWrapper{filteredTasks, summary}
 
-		if WithSummary {
-			fmt.Println(summmaryText(open, done, cancelled))
+		if AsJson {
+			json, _ := json.MarshalIndent(wrapper, "", "  ")
+			fmt.Println(string(json))
+		} else {
+			for _, task := range tasks {
+				fmt.Println(task)
+			}
+
+			if WithSummary {
+				fmt.Println(summary)
+			}
 		}
 
 	},
 }
 
-func summmaryText(open int, done int, cancelled int) string {
-	return fmt.Sprintf("%d/%d tasks", done, open+done+cancelled)
-}
-
 func init() {
 	tasksCmd.Flags().BoolP("verbose", "v", false, "Log verbose")
 	tasksCmd.Flags().BoolP("summary", "s", true, "Print summary")
+
+	tasksCmd.Flags().BoolP("json", "", false, "Print json")
 	tasksCmd.Flags().BoolP("show-cancelled", "c", true, "Show Cancelled")
 	tasksCmd.Flags().BoolP("show-done", "d", true, "Show Done")
 	tasksCmd.Flags().StringP("journal", "j", "default", "Select Journal with id")

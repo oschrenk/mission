@@ -7,6 +7,7 @@ Track your mission (with [sketchybar](https://github.com/FelixKratz/SketchyBar))
 - Emits sketchybar event if today's journal entry changes
   - also emits `JOURNAL_ID` as ENV variable, see also [Triggering Custom Events](https://felixkratz.github.io/SketchyBar/config/events#triggering-custom-events) for more details
 - Emits sketchybar event if macOS focus changes
+- Support json
 
 ## Configuration
 
@@ -67,6 +68,29 @@ mission tasks --journal=work
 󰄴 Finish ticket 123
 󰝦 Do ticket 456
 1/2 tasks
+```
+
+Print today's tasks from "work" journal as json
+
+```
+mission tasks --journal=work --json
+{
+  "tasks": [
+    {
+      "state": "done",
+      "text": "Finish ticket 123"
+    },
+    {
+      "state": "open",
+      "text": "Do ticket 456"
+    },
+  ],
+  "summary": {
+    "done": 1
+    "total": 2
+  }
+}
+```
 ```
 
 ### `mission fcous`

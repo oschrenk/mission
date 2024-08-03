@@ -8,9 +8,10 @@ import (
 )
 
 type Task struct {
-	State TaskState
-	Text  string
-	Depth int
+	State TaskState `json:"state"`
+	Text  string    `json:"text"`
+	// for now we always skip the field in json
+	Depth int `json:"-"`
 }
 
 func (t Task) String() string {
