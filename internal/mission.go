@@ -35,7 +35,7 @@ func getJournalFromPath(targetPath string, journals map[string]Journal) optional
 		journalDir := filepath.Clean(journal.Path)
 		fileDir := filepath.Dir(targetPath)
 		if journalDir == fileDir {
-			return optional.Some[Journal](journal)
+			return optional.Some(journal)
 		}
 	}
 	return optional.None[Journal]()

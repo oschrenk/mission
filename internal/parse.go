@@ -45,7 +45,7 @@ func (mission *Mission) parseTaskState(text string, depth int) optional.Option[m
 		return optional.None[model.Task]()
 	}
 	task := model.Task{State: state, Text: text, Depth: depth}
-	return optional.Some[model.Task](task)
+	return optional.Some(task)
 }
 
 func getText(n ast.Node, source []byte) string {
