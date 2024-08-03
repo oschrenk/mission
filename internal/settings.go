@@ -77,13 +77,13 @@ func LoadSettings() Settings {
 	// load config
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %w \n", err))
+		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
 	var parsed parsed
 	err = viper.Unmarshal(&parsed)
 	if err != nil {
 		// TODO throw better error
-		log.Printf("Error reading config file: %s", err)
+		log.Printf("error reading config file: %s", err)
 	}
 	return fromParsed(parsed)
 }
