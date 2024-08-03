@@ -10,6 +10,7 @@ tasks:
       - go run main.go
     silent: true
   check:
+    # requires `go install honnef.co/go/tools/cmd/staticcheck@latest`
     cmds:
       - staticcheck ./...
   tidy:
@@ -65,6 +66,7 @@ tasks:
     cmds:
       - rm -rf {{.BUILD_TARGET}}
       - rm -rf {{.RELEASE_DIR}}
+  # requires `go install github.com/air-verse/air@latest`
   watch:
     cmds:
       - mkdir -p tmp

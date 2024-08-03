@@ -2,7 +2,9 @@
 
 **Requirements**
 
-- [air](https://github.com/cosmtrek/air)
+- [go](https://go.dev/) `brew install go`
+- [air](https://github.com/cosmtrek/air) `go install github.com/air-verse/air@latest`
+- [staticcheck]() `go install honnef.co/go/tools/cmd/staticcheck@latest`
 
 **Commands**
 
