@@ -76,11 +76,14 @@ func (mission *Mission) parseTasks(data []byte, doc ast.Node) []model.Task {
 		}
 
 		if n, ok := node.(*ast.ListItem); ok && enter {
-			item := n.FirstChild()
-			text := getText(item, data)
-			maybeTask := mission.parseTask(text, depth)
-			if maybeTask.IsSome() {
-				tasks = append(tasks, maybeTask.Unwrap())
+			if n.ChildCount() > 0 {
+				item := n.FirstChild()
+				n.ChildCount()
+				text := getText(item, data)
+				maybeTask := mission.parseTask(text, depth)
+				if maybeTask.IsSome() {
+					tasks = append(tasks, maybeTask.Unwrap())
+				}
 			}
 		}
 
