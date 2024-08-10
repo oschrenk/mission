@@ -18,6 +18,8 @@ Track your mission (with [sketchybar](https://github.com/FelixKratz/SketchyBar))
 
 If you do use the app with SketchyBar, SketchyBar would need "Full Disk Access" since it would orchestrate the calls.
 
+This needs to be done every time you update `mission`
+
 ### Application
 
 `mission` looks for the first configuration file in
