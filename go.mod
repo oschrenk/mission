@@ -6,7 +6,6 @@ require (
 	github.com/LNMMusic/optional v1.1.0
 	github.com/fatih/color v1.16.0
 	github.com/fsnotify/fsnotify v1.7.0
-	github.com/ijt/go-anytime v1.9.2
 	github.com/itchyny/gojq v0.12.16
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
@@ -15,7 +14,6 @@ require (
 
 require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/ijt/goparsify v0.0.0-20221203142333-3a5276334b8d // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/itchyny/timefmt-go v0.1.6 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

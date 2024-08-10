@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ijt/go-anytime"
 	"github.com/spf13/cobra"
 
 	m "github.com/oschrenk/mission/internal"
@@ -24,8 +23,9 @@ type TasksWrapper struct {
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
 	Short: "Show tasks",
-	Args:  cobra.MaximumNArgs(1),
+	Args:  cobra.MaximumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
+
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		m.Logger.Enabled = verbose
 		WithSummary, _ := cmd.Flags().GetBool("summary")
@@ -36,23 +36,8 @@ var tasksCmd = &cobra.Command{
 
 		now := time.Now()
 		dateTime := now
-		precision := m.Day
-		if len(args) > 0 {
-			rawDate := args[0]
-			parsedRange, err := anytime.ParseRange(rawDate, now)
-			if err != nil {
-				m.Logger.Log(fmt.Sprintf("Failed parsing date \"%s\"", rawDate))
-			}
-			parsedDay := parsedRange.Time
-			precision, err = m.BuildTimePrecision(parsedRange.Duration)
-			if err != nil {
-				m.Logger.Log(fmt.Sprintf("Can't parse precision \"%s\"", rawDate))
-			}
-			dateTime = parsedDay
-		}
-
 		mission := m.DefaultInstance()
-		tasks, err := mission.GetTasksFromJournal(targetJournal, dateTime, precision)
+		tasks, err := mission.GetTasksFromJournal(targetJournal, dateTime)
 
 		open := 0
 		cancelled := 0
