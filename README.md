@@ -16,7 +16,7 @@ Track your mission (with [sketchybar](https://github.com/FelixKratz/SketchyBar))
 - `mission tasks` might require access to iCloud drive (depending on the location of your Vault or markdown files). macOS **should** prompt you
 * `mission focus` and `mission watch` require Full Disk Access so that it can access the user's system file for focus at `$HOME/Library/DoNotDisturb/DB/Assertions.json`. You can do so by going to "System Settings" > "Privacy & Security" > "Full Disk Access". `mission` should be listed if you already executed it once.
 
-If you do use the app with SketchyBar, SketchyBar would need "Full Disk Access" since it would orchestrating the calls.
+If you do use the app with SketchyBar, SketchyBar would need "Full Disk Access" since it would orchestrate the calls.
 
 ### Application
 
