@@ -52,7 +52,8 @@ var tasksCmd = &cobra.Command{
 		}
 
 		mission := m.DefaultInstance()
-		tasks, err := mission.GetTasks(targetJournal, dateTime, precision)
+		tasks, err := mission.GetTasksFromJournal(targetJournal, dateTime, precision)
+
 		open := 0
 		cancelled := 0
 		done := 0

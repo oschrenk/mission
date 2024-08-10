@@ -143,8 +143,7 @@ func (mission *Mission) Watch() {
 	<-make(chan struct{})
 }
 
-func (mission *Mission) GetTasks(journalName string, dateTime time.Time, tp TimePrecision) ([]model.Task, error) {
-
+func (mission *Mission) GetTasksFromJournal(journalName string, dateTime time.Time, tp TimePrecision) ([]model.Task, error) {
 	entry := ""
 	journal := mission.settings.Journals[journalName]
 
@@ -159,6 +158,10 @@ func (mission *Mission) GetTasks(journalName string, dateTime time.Time, tp Time
 	}
 
 	path := journal.Path + "/" + entry
+	return mission.GetTasksFromPath(path)
+}
+
+func (mission *Mission) GetTasksFromPath(path string) ([]model.Task, error) {
 	data, doc, err := parseFile(path)
 	if err != nil {
 		return nil, err
