@@ -3,6 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -23,7 +25,7 @@ type TasksWrapper struct {
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
 	Short: "Show tasks",
-	Args:  cobra.MaximumNArgs(0),
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
 		verbose, _ := cmd.Flags().GetBool("verbose")
@@ -37,7 +39,22 @@ var tasksCmd = &cobra.Command{
 		now := time.Now()
 		dateTime := now
 		mission := m.DefaultInstance()
-		tasks, err := mission.GetTasksFromJournal(targetJournal, dateTime)
+
+		var tasks []model.Task
+		var err error
+
+		if len(args) > 0 {
+			path := args[0]
+
+			if filepath.IsAbs(path) {
+				tasks, err = mission.GetTasksFromPath(path)
+			} else {
+				wd, _ := os.Getwd()
+				tasks, err = mission.GetTasksFromPath(filepath.Join(wd, path))
+			}
+		} else {
+			tasks, err = mission.GetTasksFromJournal(targetJournal, dateTime)
+		}
 
 		open := 0
 		cancelled := 0
