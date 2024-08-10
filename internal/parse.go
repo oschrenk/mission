@@ -82,7 +82,10 @@ func (mission *Mission) parseTasks(data []byte, doc ast.Node) []model.Task {
 				text := getText(item, data)
 				maybeTask := mission.parseTask(text, depth)
 				if maybeTask.IsSome() {
-					tasks = append(tasks, maybeTask.Unwrap())
+					task := maybeTask.Unwrap()
+					if task.Text != "" {
+						tasks = append(tasks, maybeTask.Unwrap())
+					}
 				}
 			}
 		}

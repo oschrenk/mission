@@ -120,3 +120,23 @@ func TestParseEmptyBullet(t *testing.T) {
 		t.Fatalf(`len(tasks) should be 0, but was %d`, len(tasks))
 	}
 }
+
+func TestParseEmptyOpenTask(t *testing.T) {
+	md := []byte(`- [ ]`)
+	data, doc, _ := parseString(md)
+	tasks := mission.parseTasks(data, doc)
+
+	if len(tasks) != 0 {
+		t.Fatalf(`len(tasks) should be 0, but was %d`, len(tasks))
+	}
+}
+
+func TestParseEmptyDoneTask(t *testing.T) {
+	md := []byte(`- [x]`)
+	data, doc, _ := parseString(md)
+	tasks := mission.parseTasks(data, doc)
+
+	if len(tasks) != 0 {
+		t.Fatalf(`len(tasks) should be 0, but was %d`, len(tasks))
+	}
+}
