@@ -9,7 +9,7 @@ require (
 	github.com/itchyny/gojq v0.12.16
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.18.2
-	github.com/yuin/goldmark v1.7.1
+	github.com/yuin/goldmark v1.7.4
 )
 
 require (
