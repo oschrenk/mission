@@ -10,7 +10,6 @@ tasks:
       - go run main.go
     silent: true
   check:
-    # requires `go install honnef.co/go/tools/cmd/staticcheck@latest`
     cmds:
       - staticcheck ./...
   tidy:
@@ -34,7 +33,7 @@ tasks:
     silent: true
   uninstall:
     cmds:
-      - rm "${GOBIN}/{{.APP_NAME}}"
+      - rm -f ${GOBIN}/{{.APP_NAME}}
     silent: true
   artifacts:
     requires:
@@ -43,7 +42,7 @@ tasks:
       - mkdir -p {{.RELEASE_DIR}}
       - GOOS=darwin GOARCH=arm64 go build -v -o {{.RELEASE_DIR}}/{{.APP_NAME}}-darwin-arm64
       - GOOS=darwin GOARCH=amd64 go build -v -o {{.RELEASE_DIR}}/{{.APP_NAME}}-darwin-amd64
-    deps: [lint, test]
+    deps: [tidy]
   tag:
     deps: [artifacts]
     cmds:
@@ -66,8 +65,7 @@ tasks:
     cmds:
       - rm -rf {{.BUILD_TARGET}}
       - rm -rf {{.RELEASE_DIR}}
-  # requires `go install github.com/air-verse/air@latest`
-  watch:
+  updates:
+    # {{` `}} is to escape go templating from go task
     cmds:
-      - mkdir -p tmp
-      - air
+      - "go list -u -f '{{`{{if (and (not (or .Main .Indirect)) .Update)}}{{.Path}}: {{.Version}} -> {{.Update.Version}}{{end}}`}}' -m all 2> /dev/null"

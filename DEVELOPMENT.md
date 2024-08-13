@@ -3,7 +3,6 @@
 **Requirements**
 
 - [go](https://go.dev/) `brew install go`
-- [air](https://github.com/cosmtrek/air) `go install github.com/air-verse/air@latest`
 - [staticcheck]() `go install honnef.co/go/tools/cmd/staticcheck@latest`
 
 **Commands**
@@ -12,16 +11,18 @@
 - **run** `task run`
 - **test** `task test`
 - **lint** `task lint`
-
-**Continuous build**
-
-By default `task watch` will continuously watch and rebuild the project upon any change.
-
-To also re-run it you should overwrite the defaults and use
-
-```
-air -c ./.air.toml --build.bin "./tmp/main todo"
-```
+- `task build` Build project
+- `task run` Run example
+- `task test` Run tests
+- `task lint` Lint
+- `task install` Install app in `$GOBIN/`
+- `task uninstall` Removed app from `$GOBIN/`
+- `task artifacts` Produces artifact in `./`
+- `task tag` Pushes git tag from `VERSION`
+- `task release` Creates GitHub release from artifacts
+- `task sha` Prints hashes from artifacts
+- `task clean` Removes build directory `.build`
+- `task updates` Find dependency updates
 
 ## Release
 
