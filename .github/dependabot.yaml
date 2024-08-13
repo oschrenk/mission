@@ -5,5 +5,5 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: ":bookmark"
+      prefix: ":arrow_up"
       include: "scope"
