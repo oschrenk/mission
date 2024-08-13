@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/LNMMusic/optional v1.1.0
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/itchyny/gojq v0.12.16
 	github.com/spf13/cobra v1.8.1
