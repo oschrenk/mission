@@ -7,13 +7,10 @@
 
 **Commands**
 
-- **build** `task build`
-- **run** `task run`
-- **test** `task test`
-- **lint** `task lint`
 - `task build` Build project
 - `task run` Run example
 - `task test` Run tests
+- `task tidy` Ensure all imports are satisfied
 - `task lint` Lint
 - `task install` Install app in `$GOBIN/`
 - `task uninstall` Removed app from `$GOBIN/`
