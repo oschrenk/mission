@@ -1,6 +1,6 @@
 module github.com/oschrenk/mission
 
-go 1.21.5
+go 1.22.6
 
 require (
 	github.com/LNMMusic/optional v1.1.0
