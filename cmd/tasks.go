@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/thediveo/enumflag/v2"
 
 	m "github.com/oschrenk/mission/internal"
 	model "github.com/oschrenk/mission/model"
@@ -22,6 +23,8 @@ type TasksWrapper struct {
 	Summary model.Summary `json:"summary"`
 }
 
+var granularity m.Granularity = m.Day
+
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
 	Short: "Show tasks",
@@ -32,7 +35,7 @@ var tasksCmd = &cobra.Command{
 		showCancelled, _ := cmd.Flags().GetBool("show-cancelled")
 		showDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
-		isToday, _ := cmd.Flags().GetBool("today")
+		cmd.Flags().Lookup("granularity").Value.String()
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		withSummary, _ := cmd.Flags().GetBool("summary")
 
@@ -52,13 +55,7 @@ var tasksCmd = &cobra.Command{
 				tasks, err = mission.GetTasksFromPath(filepath.Join(wd, path))
 			}
 		} else {
-			dateTime := func() time.Time {
-				if isToday {
-					return time.Now()
-				}
-				return time.Now()
-			}()
-			tasks, err = mission.GetTasksFromJournal(targetJournal, dateTime)
+			tasks, err = mission.GetTasksFromJournal(targetJournal, granularity, time.Now())
 		}
 
 		open := 0
@@ -103,13 +100,15 @@ var tasksCmd = &cobra.Command{
 				fmt.Println(summary)
 			}
 		}
-
 	},
 }
 
 func init() {
 	tasksCmd.Flags().BoolP("json", "", false, "Print json")
-	tasksCmd.Flags().BoolP("today", "", true, "Use today's date")
+	tasksCmd.Flags().Var(
+		enumflag.New(&granularity, "granularity", m.GranularityIds, enumflag.EnumCaseInsensitive),
+		"granularity",
+		"set granularity level; can be 'day', 'week', 'month', 'quarter', 'year'")
 	tasksCmd.Flags().BoolP("show-cancelled", "c", true, "Show Cancelled")
 	tasksCmd.Flags().BoolP("show-done", "d", true, "Show Done")
 	tasksCmd.Flags().BoolP("summary", "s", true, "Print summary")

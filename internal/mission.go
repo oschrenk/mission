@@ -143,10 +143,29 @@ func (mission *Mission) Watch() {
 	<-make(chan struct{})
 }
 
-func (mission *Mission) GetTasksFromJournal(journalName string, dateTime time.Time) ([]model.Task, error) {
-	journal := mission.settings.Journals[journalName]
-	entry := fmt.Sprint(dateTime.Format("2006-01-02"), ".", journal.Extension)
+func getEntryName(granularity Granularity, now time.Time, extension string) string {
+	switch granularity {
+	case Day:
+		return fmt.Sprintf("%s.%s", now.Format("2006-01-02"), extension)
+	case Week:
+		year, week := now.ISOWeek()
+		return fmt.Sprintf("%d-W%02d.%s", year, week, extension)
+	case Month:
+		return fmt.Sprintf("%s.%s", now.Format("2006-01"), extension)
+	case Quarter:
+		quarter := (now.Month()-1)/3 + 1
+		return fmt.Sprintf("%d-Q%d.%s", now.Year(), quarter, extension)
+	case Year:
+		return fmt.Sprintf("%d.%s", now.Year(), extension)
+	default:
+		return fmt.Sprintf("%s.%s", now.Format("2006-01-02"), extension)
+	}
+}
 
+func (mission *Mission) GetTasksFromJournal(journalName string, granularity Granularity, now time.Time) ([]model.Task, error) {
+	journal := mission.settings.Journals[journalName]
+
+	var entry = getEntryName(granularity, now, journal.Extension)
 	path := journal.Path + "/" + entry
 	return mission.GetTasksFromPath(path)
 }
