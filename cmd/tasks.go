@@ -36,8 +36,6 @@ var tasksCmd = &cobra.Command{
 		ShowDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
 
-		now := time.Now()
-		dateTime := now
 		mission := m.DefaultInstance()
 
 		var tasks []model.Task
@@ -53,6 +51,7 @@ var tasksCmd = &cobra.Command{
 				tasks, err = mission.GetTasksFromPath(filepath.Join(wd, path))
 			}
 		} else {
+			dateTime := time.Now()
 			tasks, err = mission.GetTasksFromJournal(targetJournal, dateTime)
 		}
 
