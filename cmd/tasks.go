@@ -28,14 +28,14 @@ var tasksCmd = &cobra.Command{
 	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 
-		verbose, _ := cmd.Flags().GetBool("verbose")
-		m.Logger.Enabled = verbose
-		withSummary, _ := cmd.Flags().GetBool("summary")
-		showCancelled, _ := cmd.Flags().GetBool("show-cancelled")
 		asJson, _ := cmd.Flags().GetBool("json")
+		showCancelled, _ := cmd.Flags().GetBool("show-cancelled")
 		showDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
+		verbose, _ := cmd.Flags().GetBool("verbose")
+		withSummary, _ := cmd.Flags().GetBool("summary")
 
+		m.Logger.Enabled = verbose
 		mission := m.DefaultInstance()
 
 		var tasks []model.Task
@@ -102,11 +102,10 @@ var tasksCmd = &cobra.Command{
 }
 
 func init() {
-	tasksCmd.Flags().BoolP("verbose", "v", false, "Log verbose")
-	tasksCmd.Flags().BoolP("summary", "s", true, "Print summary")
-
 	tasksCmd.Flags().BoolP("json", "", false, "Print json")
 	tasksCmd.Flags().BoolP("show-cancelled", "c", true, "Show Cancelled")
 	tasksCmd.Flags().BoolP("show-done", "d", true, "Show Done")
+	tasksCmd.Flags().BoolP("summary", "s", true, "Print summary")
+	tasksCmd.Flags().BoolP("verbose", "v", false, "Log verbose")
 	tasksCmd.Flags().StringP("journal", "j", "default", "Select Journal with id")
 }
