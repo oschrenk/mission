@@ -32,6 +32,7 @@ var tasksCmd = &cobra.Command{
 		showCancelled, _ := cmd.Flags().GetBool("show-cancelled")
 		showDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
+		isToday, _ := cmd.Flags().GetBool("today")
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		withSummary, _ := cmd.Flags().GetBool("summary")
 
@@ -51,7 +52,12 @@ var tasksCmd = &cobra.Command{
 				tasks, err = mission.GetTasksFromPath(filepath.Join(wd, path))
 			}
 		} else {
-			dateTime := time.Now()
+			dateTime := func() time.Time {
+				if isToday {
+					return time.Now()
+				}
+				return time.Now()
+			}()
 			tasks, err = mission.GetTasksFromJournal(targetJournal, dateTime)
 		}
 
@@ -103,6 +109,7 @@ var tasksCmd = &cobra.Command{
 
 func init() {
 	tasksCmd.Flags().BoolP("json", "", false, "Print json")
+	tasksCmd.Flags().BoolP("today", "", true, "Use today's date")
 	tasksCmd.Flags().BoolP("show-cancelled", "c", true, "Show Cancelled")
 	tasksCmd.Flags().BoolP("show-done", "d", true, "Show Done")
 	tasksCmd.Flags().BoolP("summary", "s", true, "Print summary")
