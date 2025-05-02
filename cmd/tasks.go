@@ -30,10 +30,10 @@ var tasksCmd = &cobra.Command{
 
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		m.Logger.Enabled = verbose
-		WithSummary, _ := cmd.Flags().GetBool("summary")
-		ShowCancelled, _ := cmd.Flags().GetBool("show-cancelled")
-		AsJson, _ := cmd.Flags().GetBool("json")
-		ShowDone, _ := cmd.Flags().GetBool("show-done")
+		withSummary, _ := cmd.Flags().GetBool("summary")
+		showCancelled, _ := cmd.Flags().GetBool("show-cancelled")
+		asJson, _ := cmd.Flags().GetBool("json")
+		showDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
 
 		mission := m.DefaultInstance()
@@ -64,12 +64,12 @@ var tasksCmd = &cobra.Command{
 				switch task.State {
 				case model.Cancelled:
 					cancelled = cancelled + 1
-					if ShowCancelled {
+					if showCancelled {
 						filteredTasks = append(filteredTasks, task)
 					}
 				case model.Done:
 					done = done + 1
-					if ShowDone {
+					if showDone {
 						filteredTasks = append(filteredTasks, task)
 					}
 				case model.Open:
@@ -78,14 +78,14 @@ var tasksCmd = &cobra.Command{
 				}
 			}
 
-			if !ShowCancelled {
+			if !showCancelled {
 				cancelled = 0
 			}
 		}
 		summary := model.Summary{Done: done, Total: open + done + cancelled}
 		wrapper := TasksWrapper{filteredTasks, summary}
 
-		if AsJson {
+		if asJson {
 			json, _ := json.MarshalIndent(wrapper, "", "  ")
 			fmt.Println(string(json))
 		} else {
@@ -93,7 +93,7 @@ var tasksCmd = &cobra.Command{
 				fmt.Println(task)
 			}
 
-			if WithSummary {
+			if withSummary {
 				fmt.Println(summary)
 			}
 		}
