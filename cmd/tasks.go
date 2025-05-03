@@ -103,10 +103,6 @@ var tasksCmd = &cobra.Command{
 		vault := mission.Settings.Vault
 		rel_path, _ := filepath.Rel(vault.Path, abs_path)
 		path := Path{abs_path, rel_path}
-		fmt.Println(abs_path)
-		fmt.Println(vault.Path)
-		fmt.Println(rel_path)
-
 		meta := Meta{vault.Name, targetJournal, path}
 		wrapper := TasksWrapper{filteredTasks, summary, meta}
 
