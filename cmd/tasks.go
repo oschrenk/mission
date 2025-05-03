@@ -18,9 +18,15 @@ func init() {
 	rootCmd.AddCommand(tasksCmd)
 }
 
+type Meta struct {
+	Journal string `json:"journal"`
+	Path    string `json:"path"`
+}
+
 type TasksWrapper struct {
 	Tasks   []model.Task  `json:"tasks"`
 	Summary model.Summary `json:"summary"`
+	Meta    Meta          `json:"meta"`
 }
 
 var granularity m.Granularity = m.Day
@@ -44,9 +50,10 @@ var tasksCmd = &cobra.Command{
 
 		var tasks []model.Task
 		var err error
+		var path string
 
 		if len(args) > 0 {
-			path := args[0]
+			path = args[0]
 
 			if filepath.IsAbs(path) {
 				tasks, err = mission.GetTasksFromPath(path)
@@ -56,7 +63,7 @@ var tasksCmd = &cobra.Command{
 			}
 		} else {
 			journal := mission.Settings.Journals[targetJournal]
-			path := journal.GetEntryPath(granularity, time.Now())
+			path = journal.GetEntryPath(granularity, time.Now())
 			tasks, err = mission.GetTasksFromPath(path)
 		}
 
@@ -88,7 +95,8 @@ var tasksCmd = &cobra.Command{
 			}
 		}
 		summary := model.Summary{Done: done, Total: open + done + cancelled}
-		wrapper := TasksWrapper{filteredTasks, summary}
+		meta := Meta{targetJournal, path}
+		wrapper := TasksWrapper{filteredTasks, summary, meta}
 
 		if asJson {
 			json, _ := json.MarshalIndent(wrapper, "", "  ")
