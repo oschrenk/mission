@@ -19,8 +19,14 @@ type Focus struct {
 	Path string `mapstructure:"path"`
 }
 
+type Vault struct {
+	Name string
+	Path string
+}
+
 type Journal struct {
 	Id        string
+	Vault     string
 	Path      string `mapstructure:"path"`
 	Extension string `mapstructure:"extension"`
 }
@@ -50,6 +56,7 @@ func (journal *Journal) GetEntryPath(granularity Granularity, now time.Time) str
 }
 
 type parsed struct {
+	Vault Vault `mapstructure:"vault"`
 	// without the []Journal here, we get "expected a map, got 'slice'"
 	Journals   map[string][]Journal `mapstructure:"journals"`
 	Sketchybar Sketchybar           `mapstructure:"sketchybar"`
@@ -57,12 +64,14 @@ type parsed struct {
 }
 
 type Settings struct {
+	Vault      Vault
 	Journals   map[string]Journal
 	Sketchybar Sketchybar
 	Focus      Focus
 }
 
 func fromParsed(parsed parsed) Settings {
+	var vault = parsed.Vault
 	var journals = make(map[string]Journal)
 	for id, journal := range parsed.Journals {
 		j := journal[0]
@@ -77,6 +86,7 @@ func fromParsed(parsed parsed) Settings {
 	}
 
 	return Settings{
+		Vault:      vault,
 		Journals:   journals,
 		Sketchybar: sketchybar,
 		Focus:      focus,
