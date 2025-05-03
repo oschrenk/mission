@@ -18,9 +18,15 @@ func init() {
 	rootCmd.AddCommand(tasksCmd)
 }
 
+type Path struct {
+	Absolute string `json:"absolute"`
+	Relative string `json:"relative"`
+}
+
 type Meta struct {
+	Vault   string `json:"vault"`
 	Journal string `json:"journal"`
-	Path    string `json:"path"`
+	Path    Path   `json:"path"`
 }
 
 type TasksWrapper struct {
@@ -50,21 +56,20 @@ var tasksCmd = &cobra.Command{
 
 		var tasks []model.Task
 		var err error
-		var path string
+		var abs_path string
 
 		if len(args) > 0 {
-			path = args[0]
-
-			if filepath.IsAbs(path) {
-				tasks, err = mission.GetTasksFromPath(path)
+			if filepath.IsAbs(args[0]) {
+				abs_path = args[0]
 			} else {
 				wd, _ := os.Getwd()
-				tasks, err = mission.GetTasksFromPath(filepath.Join(wd, path))
+				abs_path = filepath.Join(wd, args[0])
 			}
+			tasks, err = mission.GetTasksFromPath(abs_path)
 		} else {
 			journal := mission.Settings.Journals[targetJournal]
-			path = journal.GetEntryPath(granularity, time.Now())
-			tasks, err = mission.GetTasksFromPath(path)
+			abs_path = journal.GetEntryPath(granularity, time.Now())
+			tasks, err = mission.GetTasksFromPath(abs_path)
 		}
 
 		open := 0
@@ -95,7 +100,14 @@ var tasksCmd = &cobra.Command{
 			}
 		}
 		summary := model.Summary{Done: done, Total: open + done + cancelled}
-		meta := Meta{targetJournal, path}
+		vault := mission.Settings.Vault
+		rel_path, _ := filepath.Rel(vault.Path, abs_path)
+		path := Path{abs_path, rel_path}
+		fmt.Println(abs_path)
+		fmt.Println(vault.Path)
+		fmt.Println(rel_path)
+
+		meta := Meta{vault.Name, targetJournal, path}
 		wrapper := TasksWrapper{filteredTasks, summary, meta}
 
 		if asJson {

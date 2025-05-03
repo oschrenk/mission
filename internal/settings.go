@@ -71,7 +71,10 @@ type Settings struct {
 }
 
 func fromParsed(parsed parsed) Settings {
-	var vault = parsed.Vault
+	vault := Vault{
+		Name: parsed.Vault.Name,
+		Path: os.ExpandEnv(parsed.Vault.Path),
+	}
 	var journals = make(map[string]Journal)
 	for id, journal := range parsed.Journals {
 		j := journal[0]
