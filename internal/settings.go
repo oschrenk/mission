@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -22,6 +23,30 @@ type Journal struct {
 	Id        string
 	Path      string `mapstructure:"path"`
 	Extension string `mapstructure:"extension"`
+}
+
+func (journal *Journal) GetEntryName(granularity Granularity, now time.Time) string {
+	switch granularity {
+	case Day:
+		return fmt.Sprintf("%s.%s", now.Format("2006-01-02"), journal.Extension)
+	case Week:
+		year, week := now.ISOWeek()
+		return fmt.Sprintf("%d-W%02d.%s", year, week, journal.Extension)
+	case Month:
+		return fmt.Sprintf("%s.%s", now.Format("2006-01"), journal.Extension)
+	case Quarter:
+		quarter := (now.Month()-1)/3 + 1
+		return fmt.Sprintf("%d-Q%d.%s", now.Year(), quarter, journal.Extension)
+	case Year:
+		return fmt.Sprintf("%d.%s", now.Year(), journal.Extension)
+	default:
+		return fmt.Sprintf("%s.%s", now.Format("2006-01-02"), journal.Extension)
+	}
+}
+
+func (journal *Journal) GetEntryPath(granularity Granularity, now time.Time) string {
+	var entry = journal.GetEntryName(granularity, now)
+	return journal.Path + "/" + entry
 }
 
 type parsed struct {

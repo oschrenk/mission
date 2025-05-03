@@ -55,7 +55,9 @@ var tasksCmd = &cobra.Command{
 				tasks, err = mission.GetTasksFromPath(filepath.Join(wd, path))
 			}
 		} else {
-			tasks, err = mission.GetTasksFromJournal(targetJournal, granularity, time.Now())
+			journal := mission.Settings.Journals[targetJournal]
+			path := journal.GetEntryPath(granularity, time.Now())
+			tasks, err = mission.GetTasksFromPath(path)
 		}
 
 		open := 0

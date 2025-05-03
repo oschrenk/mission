@@ -14,7 +14,7 @@ import (
 )
 
 type Mission struct {
-	settings Settings
+	Settings Settings
 }
 
 func DefaultInstance() Mission {
@@ -23,11 +23,11 @@ func DefaultInstance() Mission {
 }
 
 func NewInstance(settings Settings) Mission {
-	return Mission{settings: settings}
+	return Mission{Settings: settings}
 }
 
 func (mission *Mission) Focus() string {
-	return GetFocus(mission.settings.Focus.Path)
+	return GetFocus(mission.Settings.Focus.Path)
 }
 
 func getJournalFromPath(targetPath string, journals map[string]Journal) optional.Option[Journal] {
@@ -70,9 +70,9 @@ func testAndFireTask(path string, journals map[string]Journal, sketchybar Sketch
 }
 
 func (mission *Mission) Watch() {
-	journals := mission.settings.Journals
-	sketchybar := mission.settings.Sketchybar
-	focus := mission.settings.Focus
+	journals := mission.Settings.Journals
+	sketchybar := mission.Settings.Sketchybar
+	focus := mission.Settings.Focus
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -143,30 +143,10 @@ func (mission *Mission) Watch() {
 	<-make(chan struct{})
 }
 
-func getEntryName(granularity Granularity, now time.Time, extension string) string {
-	switch granularity {
-	case Day:
-		return fmt.Sprintf("%s.%s", now.Format("2006-01-02"), extension)
-	case Week:
-		year, week := now.ISOWeek()
-		return fmt.Sprintf("%d-W%02d.%s", year, week, extension)
-	case Month:
-		return fmt.Sprintf("%s.%s", now.Format("2006-01"), extension)
-	case Quarter:
-		quarter := (now.Month()-1)/3 + 1
-		return fmt.Sprintf("%d-Q%d.%s", now.Year(), quarter, extension)
-	case Year:
-		return fmt.Sprintf("%d.%s", now.Year(), extension)
-	default:
-		return fmt.Sprintf("%s.%s", now.Format("2006-01-02"), extension)
-	}
-}
-
 func (mission *Mission) GetTasksFromJournal(journalName string, granularity Granularity, now time.Time) ([]model.Task, error) {
-	journal := mission.settings.Journals[journalName]
+	journal := mission.Settings.Journals[journalName]
 
-	var entry = getEntryName(granularity, now, journal.Extension)
-	path := journal.Path + "/" + entry
+	var path = journal.GetEntryPath(granularity, now)
 	return mission.GetTasksFromPath(path)
 }
 
