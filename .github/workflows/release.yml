@@ -1,0 +1,36 @@
+name: Release
+on:
+  push:
+    tags:
+      - 't*'
+permissions:
+  contents: write
+  actions: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - uses: arduino/setup-task@v2
+      - name: Build binaries for mac
+        run: ~/go/bin/task release
+      - name: Generate checksums
+        run: ~/go/bin/task sha
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./.release/mission-darwin-amd64
+            ./.release/mission-darwin-amd64.sha256
+            ./.release/mission-darwin-arm64
+            ./.release/mission-darwin-arm64.sha256
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
