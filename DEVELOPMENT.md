@@ -14,7 +14,7 @@
 - `task lint` Lint
 - `task install` Install app in `$GOBIN/`
 - `task uninstall` Removed app from `$GOBIN/`
-- `task artifacts` Produces artifact in `./`
+- `task artifacts` Produces artifact in `./.release`
 - `task tag` Pushes git tag from `VERSION`
 - `task release` Creates GitHub release from artifacts
 - `task sha` Prints hashes from artifacts
