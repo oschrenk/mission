@@ -48,17 +48,22 @@ tasks:
     cmds:
       - git tag "$APP_VERSION"
       - git push origin "$APP_VERSION"
+  sha:
+    silent: true
+    requires:
+      vars: [APP_NAME, RELEASE_DIR]
+    cmds:
+      - |
+        cd {{.RELEASE_DIR}}
+        for f in $(find . -maxdepth 1 -type f -name "{{.APP_NAME}}-*" ! -name "*.sha256"); do
+          sha256sum "$f" | tee "$f.sha256"
+        done
   release:
     requires:
       vars: [APP_NAME, RELEASE_DIR]
-    deps: [tag]
+    deps: [tag, sha]
     cmds:
       - gh release create --generate-notes "$APP_VERSION" {{.RELEASE_DIR}}/{{.APP_NAME}}-*
-  sha:
-    requires:
-      vars: [APP_NAME, RELEASE_DIR]
-    cmds:
-      - sha256sum {{.RELEASE_DIR}}/{{.APP_NAME}}-*
   clean:
     requires:
       vars: [BUILD_TARGET, RELEASE_DIR]
