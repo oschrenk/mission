@@ -21,16 +21,12 @@ jobs:
         run: go mod tidy
       - name: Build binaries for mac
         run: task artifacts
-      - name: Generate checksums
-        run: task sha
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             ./.release/mission-darwin-amd64
-            ./.release/mission-darwin-amd64.sha256
             ./.release/mission-darwin-arm64
-            ./.release/mission-darwin-arm64.sha256
           draft: false
           prerelease: false
           generate_release_notes: true

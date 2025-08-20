@@ -14,9 +14,6 @@ tasks:
       - staticcheck ./...
   tidy:
     cmds:
-      - which go
-      - pwd
-      - go mod || true
       - go mod tidy
   lint:
     deps: [check, tidy]
@@ -45,7 +42,7 @@ tasks:
       - mkdir -p {{.RELEASE_DIR}}
       - CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags "-s -w" -v -o {{.RELEASE_DIR}}/{{.APP_NAME}}-darwin-arm64
       - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -v -o {{.RELEASE_DIR}}/{{.APP_NAME}}-darwin-amd64
-    deps: [tidy]
+    deps: [lint]
   tag:
     deps: [artifacts]
     cmds:
