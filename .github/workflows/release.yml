@@ -17,8 +17,6 @@ jobs:
       - uses: arduino/setup-task@v2
       - name: Display Go version
         run: go version
-      - name: Display Go mod text
-        run: go mod
       - name: Display Go mod tidy
         run: go mod tidy
       - name: Build binaries for mac
