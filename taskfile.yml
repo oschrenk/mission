@@ -11,6 +11,8 @@ tasks:
     silent: true
   check:
     cmds:
+      - echo $PATH
+      - ls -la /opt/hostedtoolcache/staticcheck/2025.1.1/x64
       - staticcheck ./...
   tidy:
     cmds:
