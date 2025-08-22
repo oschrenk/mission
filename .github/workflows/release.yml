@@ -20,9 +20,11 @@ jobs:
           uri: 'https://github.com/dominikh/go-tools/releases/download/2025.1.1/staticcheck_linux_amd64.tar.gz'
           name: 'staticcheck'
           version: '2025.1.1'
-      - name: Display Go version
-        run: go version
-      - name: Display Go mod tidy
+      - name: Debugging stuff
+        run: echo $PATH
+      - name: Debugging more
+        run: ls /opt/hostedtoolcache/staticcheck/2025.1.1/x64
+      - name: Go mod tidy
         run: go mod tidy
       - name: Build binaries for mac
         run: task artifacts
