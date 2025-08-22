@@ -15,6 +15,11 @@ jobs:
         with:
           go-version-file: 'go.mod'
       - uses: arduino/setup-task@v2
+      - uses: supplypike/setup-bin@v4
+        with:
+          uri: 'https://github.com/dominikh/go-tools/releases/download/2025.1.1/staticcheck_linux_amd64.tar.gz'
+          name: 'staticcheck'
+          version: '2025.1.1'
       - name: Display Go version
         run: go version
       - name: Display Go mod tidy
