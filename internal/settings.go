@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -99,9 +100,11 @@ func fromParsed(parsed parsed) Settings {
 func LoadSettings() Settings {
 
 	// set defaults
-	viper.SetDefault("sketchybar.path", "/opt/homebrew/bin/sketchybar")
+	// resolved through PATH, so a nix-installed sketchybar is found without
+	// hardcoding a store path here
+	viper.SetDefault("sketchybar.path", "sketchybar")
 	viper.SetDefault("sketchybar.event_task", "mission_task")
-	viper.SetDefault("sketchybar.event_focus", "mission_event")
+	viper.SetDefault("sketchybar.event_focus", "mission_focus")
 	viper.SetDefault("focus.path", "$HOME/Library/DoNotDisturb/DB/Assertions.json")
 
 	// set config type
@@ -115,7 +118,13 @@ func LoadSettings() Settings {
 	// load config
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %w", err))
+		// a missing config file is not fatal: fall back to the defaults above.
+		// a malformed one still is.
+		var notFound viper.ConfigFileNotFoundError
+		if !errors.As(err, &notFound) {
+			panic(fmt.Errorf("fatal error config file: %w", err))
+		}
+		log.Printf("no config file found, using defaults")
 	}
 	var parsed parsed
 	err = viper.Unmarshal(&parsed)
