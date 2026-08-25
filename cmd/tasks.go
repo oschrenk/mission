@@ -47,7 +47,6 @@ var tasksCmd = &cobra.Command{
 		showCancelled, _ := cmd.Flags().GetBool("show-cancelled")
 		showDone, _ := cmd.Flags().GetBool("show-done")
 		targetJournal, _ := cmd.Flags().GetString("journal")
-		cmd.Flags().Lookup("granularity").Value.String()
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		withSummary, _ := cmd.Flags().GetBool("summary")
 
