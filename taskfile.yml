@@ -1,7 +1,10 @@
 version: '3'
-dotenv: ['VERSION']
 vars:
   APP_NAME: "mission"
+  # ./VERSION holds a bare semver (e.g. 0.6.2); the "v" prefix is added here
+  # and the file is read as-is by flake.nix.
+  APP_VERSION:
+    sh: echo "v$(cat VERSION)"
   RELEASE_DIR: "./.release"
   BUILD_TARGET: "./{{.APP_NAME}}"
 tasks:
@@ -46,8 +49,8 @@ tasks:
   tag:
     deps: [artifacts]
     cmds:
-      - git tag "$APP_VERSION"
-      - git push origin "$APP_VERSION"
+      - git tag "{{.APP_VERSION}}"
+      - git push origin "{{.APP_VERSION}}"
   sha:
     silent: true
     requires:
@@ -63,7 +66,7 @@ tasks:
       vars: [APP_NAME, RELEASE_DIR]
     deps: [tag, sha]
     cmds:
-      - gh release create --generate-notes "$APP_VERSION" {{.RELEASE_DIR}}/{{.APP_NAME}}-*
+      - gh release create --generate-notes "{{.APP_VERSION}}" {{.RELEASE_DIR}}/{{.APP_NAME}}-*
   clean:
     requires:
       vars: [BUILD_TARGET, RELEASE_DIR]
