@@ -21,9 +21,10 @@
 
       # Darwin only: mission drives sketchybar and watches
       # ~/Library/DoNotDisturb, so a linux build has nothing to talk to.
+      # aarch64 only: it is what CI builds, so it is the only system the
+      # binary cache is ever populated for.
       systems = [
         "aarch64-darwin"
-        "x86_64-darwin"
       ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
