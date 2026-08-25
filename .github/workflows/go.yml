@@ -3,20 +3,16 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.21.x']
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v4
+      # tracks the version in go.mod rather than a hardcoded matrix
+      - name: Setup Go
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go-version }}
-          cache-dependency-path: subdir/go.sum
-      - name: Display Go version
-        run: go version
-      - name: Install dependencies
-        run: |
-          go get .
+          go-version-file: go.mod
       - name: Build
         run: go build -v ./...
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./...
